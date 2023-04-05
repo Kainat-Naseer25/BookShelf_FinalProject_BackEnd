@@ -38,9 +38,10 @@ db.on("error", (err) => console.log("DB not Connected", err));
 //     });
 // });
 app.post("/books/create", async (req, res) => {
-  const newBook = await Book.create(req.body);
+  const newBook = await Book.create(req.body)
   res.status(200).send({ message: "User addded successfully", newBook });
 });
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
