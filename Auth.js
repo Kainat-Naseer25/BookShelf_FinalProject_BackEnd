@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const cookiesParser = require("cookie-parser");
 var bcrypt = require("bcrypt");
 
-
 let corsoption = {
   credentials: true,
 };
@@ -34,9 +33,14 @@ router.post("/signup", async (req, res, next) => {
     return next(error);
   }
   let token;
-  try {
-    jwt.sign(newUser, secretKey, { expiresIn: "500s" }, (er, newToken) => {
+  let existingUser;
+  jwt.sign(
+    newUser.toJSON(),
+    secretKey,
+    { expiresIn: "500s" },
+    async (er, newToken) => {
       token = newToken;
+      existingUser = await User.findOne({ email: newUser.email });
       res.cookie("jwt", token, {
         maxAge: 900000,
         httpOnly: true,
@@ -44,13 +48,10 @@ router.post("/signup", async (req, res, next) => {
       });
       res.status(201).json({
         success: true,
-        data: { userId: newUser.id, email: newUser.email, token: token },
+        data: { user: existingUser, token: newToken },
       });
-    });
-  } catch (err) {
-    const error = new Error("Error! Something went wrong.");
-    return next(error);
-  }
+    }
+  );
 });
 
 router.post("/login", async (req, res, next) => {
@@ -63,43 +64,63 @@ router.post("/login", async (req, res, next) => {
     const error = new Error("Error! Something went wrong.");
     return next(error);
   }
-  if (!existingUser || !bcrypt.compare(user.password, existingUser.password)) {
-    const error = Error("Wrong details please check at once");
+  if (
+    !existingUser ||
+    !bcrypt.compareSync(user.password, existingUser.password)
+  ) {
+    const error = new Error("Wrong details please check at once");
     return next(error);
   }
 
-  jwt.sign(user, secretKey, { expiresIn: "500s" }, (er, token) => {
-    res.cookie("jwt", token, { maxAge: 900000, httpOnly: true, secure: true });
-    res.status(200).json({ success: true, message: "Login successful" });
-  });
+  jwt.sign(
+    existingUser.toJSON(),
+    secretKey,
+    { expiresIn: "500s" },
+    (er, token) => {
+      res.cookie("jwt", token, {
+        maxAge: 900000,
+        httpOnly: true,
+        secure: true,
+      });
+      res.status(200).json({
+        success: true,
+        message: "Login successful",
+        user: existingUser,
+        token: token,
+      });
+    }
+  );
 });
 
 const verifyToken = (req, res, next) => {
-  console.log("VERIFY", req.cookies);
-  const JWT = req.cookies.jwt;
-  // if (!authHeader) {
-  //     res.status(401).send("Invalid Token");
-  // }
+  const token = req.cookies.jwt;
 
-  jwt.verify(JWT, secretKey, (err, authData) => {
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized access" });
+  }
+
+  jwt.verify(token, secretKey, (err, decodedToken) => {
     if (err) {
-      res.status(401).send("Invalid Token");
-    } else {
-      // req.user = authData.user;
-      next();
+      return res.status(401).json({ error: "Invalid token" });
     }
+    req.user = decodedToken.user;
+    next();
   });
 };
 
-router.get("/logout", (req, res) => {
-  return res
-    .clearCookie("jwt")
-    .status(200)
-    .json({ message: "Successfully logged out 😏 🍀" });
-});
-
-
 router.use(verifyToken);
+
+router.get("/logout", (req, res) => {
+  try {
+    console.log("Before Clearing Cookie: ", req.cookies); // Log the original cookies object
+    res.clearCookie("jwt", { httpOnly: true, secure: true });
+    console.log("After Clearing Cookie: ", req.cookies); // Log the cookies object after clearing the cookie
+    res.status(200).json({ message: "Successfully logged out 😏 🍀" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 router.get("/", (req, res) => {
   return res.json({ message: "Hello World" });
