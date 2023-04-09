@@ -1,34 +1,26 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const app = express();
 const dotenv = require("dotenv");
-const User = require("./usersmodel");
+const express = require("express");
+const router = express.Router();
+const User = require("./Models/UsersModel");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const cookiesParser = require("cookie-parser");
 var bcrypt = require("bcrypt");
 
-const port = 5000;
 
 let corsoption = {
   credentials: true,
 };
 
 dotenv.config();
-app.use(cors(corsoption));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookiesParser({ useCredentials: true }));
-
-mongoose.connect(process.env.DATABASE_URL);
-const db = mongoose.connection;
-
-db.on("connected", () => console.log("DB Connected Successfully"));
-db.on("error", (err) => console.log("DB not Connected", err));
+router.use(cors(corsoption));
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+router.use(cookiesParser({ useCredentials: true }));
 
 const secretKey = "secretKey";
 
-app.post("/signup", async (req, res, next) => {
+router.post("/signup", async (req, res, next) => {
   const newUser = User({
     fullname: req.body.fullname,
     email: req.body.email,
@@ -61,7 +53,7 @@ app.post("/signup", async (req, res, next) => {
   }
 });
 
-app.post("/login", async (req, res, next) => {
+router.post("/login", async (req, res, next) => {
   const user = req.body;
   console.log("BODY", req.body);
   let existingUser;
@@ -99,21 +91,18 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-app.get("/logout", (req, res) => {
-    return res
-      .clearCookie("jwt")
-      .status(200)
-      .json({ message: "Successfully logged out 😏 🍀" });
-  });
-  
+router.get("/logout", (req, res) => {
+  return res
+    .clearCookie("jwt")
+    .status(200)
+    .json({ message: "Successfully logged out 😏 🍀" });
+});
 
-app.use(verifyToken);
 
-app.get("/", (req, res) => {
+router.use(verifyToken);
+
+router.get("/", (req, res) => {
   return res.json({ message: "Hello World" });
 });
 
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+module.exports = router;
