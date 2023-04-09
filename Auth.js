@@ -1,16 +1,12 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const app = express();
 const dotenv = require("dotenv");
+const express = require("express");
+const router = express.Router();
 const User = require("./Models/UsersModel");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const cookiesParser = require("cookie-parser");
 var bcrypt = require("bcrypt");
-const router = express.Router();
-const Posts = require("/usersAuth");
 
-const port = 8000;
 
 let corsoption = {
   credentials: true,
@@ -21,12 +17,6 @@ router.use(cors(corsoption));
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 router.use(cookiesParser({ useCredentials: true }));
-
-mongoose.connect(process.env.DATABASE_URL);
-const db = mongoose.connection;
-
-db.on("connected", () => console.log("DB Connected Successfully"));
-db.on("error", (err) => console.log("DB not Connected", err));
 
 const secretKey = "secretKey";
 
@@ -115,7 +105,4 @@ router.get("/", (req, res) => {
   return res.json({ message: "Hello World" });
 });
 
-
-router.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+module.exports = router;

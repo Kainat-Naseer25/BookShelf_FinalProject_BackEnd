@@ -1,8 +1,8 @@
 require("dotenv").config();
-const mongoose = require("mongoose");
-const booksCRUDRouter = require("./BooksCrud");
-const usersAuthRouter = require("./Auth");
 const express = require("express");
+const mongoose = require("mongoose");
+const booksCRUDRouter = require("./BooksCRUD");
+const authUsersRouter = require("./auth");
 const app = express();
 
 mongoose.connect(process.env.DATABASE_URL);
@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
   res.send("Server running");
 });
 
-app.use("/booksCrud", booksCRUDRouter);
-app.use("/usersAuth", usersAuthRouter);
+app.use("/crud", booksCRUDRouter);
+app.use("/users", authUsersRouter);
 
 app.listen(8000, () => console.log("Listening to port 8000"));

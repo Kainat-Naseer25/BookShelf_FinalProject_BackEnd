@@ -1,0 +1,48 @@
+.leftCol {
+    background: linear-gradient(to bottom, #743ad5, #d53a9d);
+    height: 70vh;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+.text {
+    text-align: justify;
+    margin-left: 60px;
+    margin-top: 20px;
+}
+.rightCol {
+    height: 60vh;
+}
+.bookTitle{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 25px;
+    font-weight: bold;
+}
+.box {
+    width: 37%;
+    height: 75%;
+    position: absolute;
+}
+.overlay {
+    z-index: 10;
+    margin-top: 53px;
+    margin-bottom: 53px;
+    margin-left: 90px;
+    margin-right: 53px;
+    overflow: hidden;
+}
+.overlay img {
+    width: 80%;
+    height: 100%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.gradient-button {
+    background: linear-gradient(to left, #743ad5, #d53a9d);
+    margin-left: 400px;
+    margin-top: 60px;
+    border-radius: 50px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
