@@ -17,9 +17,9 @@ router.use(cookiesParser({ useCredentials: true }));
 dotenv.config();
 
 //for fetching Books
-router.get("/books/read", async (req, res) => {
+router.get("/books/private/read/:id", async (req, res) => {
   try {
-    const Books = await Book.find();
+    const Books = await Book.find({AddedBy: req.params.id});
     res.send(Books);
   } catch (err) {
     res.status(500).json({
@@ -48,10 +48,10 @@ router.put("/books/update/:ISBN", async (req, res) => {
 });
 
 //for deleting Books
-router.delete("/books/delete/:ISBN", async (req, res) => {
+router.delete("/books/delete/:id", async (req, res) => {
   try {
-    const bookISBN = req.params.ISBN;
-    const deletedBook = await Book.deleteOne({ ISBN: bookISBN });
+    const id = req.params.id;
+    const deletedBook = await Book.deleteOne({ _id: id });
     res.json(deletedBook);
   } catch (err) {
     res.status(500).json({

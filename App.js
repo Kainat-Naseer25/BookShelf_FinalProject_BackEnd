@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const booksCRUDRouter = require("./BooksCRUD");
-const authUsersRouter = require("./auth");
+const authUsersRouter = require("./Auth");
 const app = express();
 
 mongoose.connect(process.env.DATABASE_URL);
