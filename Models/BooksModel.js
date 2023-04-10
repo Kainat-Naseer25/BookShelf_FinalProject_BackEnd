@@ -8,8 +8,8 @@ const BooksModel = new mongoose.Schema({
     Price: {type: String, required: true},
     ISBN: {type: String, required: true},
     Category: {type: String, required: true},
-    CoverImage: {type: String, required: true},
-    IsPrivate: {type: Boolean, required: true},
+    CoverImage: {type: String},
+    visibility: {type: String, required: true},
     AddedBy: {type: String, required: true},
 })
 
