@@ -2,17 +2,11 @@ const dotenv = require("dotenv");
 const express = require("express");
 const router = express.Router();
 const User = require("./Models/UsersModel");
-const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const cookiesParser = require("cookie-parser");
 var bcrypt = require("bcrypt");
 
-let corsoption = {
-  credentials: true,
-};
-
 dotenv.config();
-router.use(cors(corsoption));
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 router.use(cookiesParser({ useCredentials: true }));
