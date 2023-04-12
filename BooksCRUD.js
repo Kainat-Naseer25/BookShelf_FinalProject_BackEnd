@@ -30,13 +30,15 @@ router.post("/books/create", async (req, res) => {
 });
 
 //for updating Books
-router.put("/books/update/:ISBN", async (req, res) => {
+router.put("/books/update/:bookId", async (req, res) => {
+  console.log("edited", req.params.bookId, "body", req.body);
   try {
-    const ISBN = req.params.ISBN;
-    const updatedBook = await Book.findOneAndUpdate({ ISBN }, req.body, {
+    const bookId = req.params.bookId;
+    const updatedBook = await Book.findOneAndUpdate({ _id: bookId }, req.body, {
       new: true,
     });
     res.send(updatedBook);
+    console.log("updated", updatedBook)
   } catch (err) {
     res.status(500).json({
       message: err.message,
@@ -118,6 +120,15 @@ router.put("/books/bookshelf/remove/:userId", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/books/public/read", async (req, res) => {
+  try {
+    const books = await Book.find({ visibility: 'public' });
+    res.json(books);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
