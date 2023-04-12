@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const User = require("./UsersModel");
 
 const BooksModel = new mongoose.Schema({
 
@@ -12,6 +13,19 @@ const BooksModel = new mongoose.Schema({
     visibility: {type: String, required: true},
     AddedBy: {type: String, required: true},
 })
+
+BooksModel.pre('remove', async function(next) {
+    const book = this;
+    try {
+      await User.updateMany(
+        { bookshelf: book._id },
+        { $pull: { bookshelf: book._id } }
+      );
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
 
 const Book = mongoose.model("books", BooksModel);
 

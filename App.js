@@ -4,6 +4,13 @@ const mongoose = require("mongoose");
 const booksCRUDRouter = require("./BooksCRUD");
 const authUsersRouter = require("./Auth");
 const app = express();
+const cors = require("cors");
+
+let corsoption = {
+  credentials: true,
+};
+
+app.use(cors(corsoption));
 
 mongoose.connect(process.env.DATABASE_URL);
 const db = mongoose.connection;
