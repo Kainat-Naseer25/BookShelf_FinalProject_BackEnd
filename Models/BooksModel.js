@@ -14,6 +14,9 @@ const BooksModel = new mongoose.Schema({
     AddedBy: {type: String, required: true},
 })
 
+BooksModel.index({ BookName: 'text', Author: 'text' });
+
+
 BooksModel.pre('remove', async function(next) {
     const book = this;
     try {

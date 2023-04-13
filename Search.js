@@ -12,16 +12,38 @@ router.use(cookiesParser({ useCredentials: true }));
 
 dotenv.config();
 
-router.get('/api/books?search', async (req, res) => {
-  const searchTerm = req.query.search;
-  const regex = new RegExp(searchTerm, 'i');
-  const books = await Book.find({
-    $or: [
-      { BookName: { $regex: regex } },
-      { Author: { $regex: regex } },
-    ]
-  });
-  res.json(books);
+async function searchBooks(query) {
+  return Book.find({
+    $and: [
+      {
+        $or: [
+          { BookName: { $regex: new RegExp(query, "i") } },
+          { Author: { $regex: new RegExp(query, "i") } },
+        ],
+      },
+      { visibility: "public" },
+    ],
+  })
+    .then((results) => {
+      return results;
+    })
+    .catch((error) => {
+      console.error(error);
+      throw new Error("An error occurred while searching for books.");
+    });
+}
+
+router.get("/search", (req, res) => {
+  const query = req.query.q;
+  console.log(query);
+  searchBooks(query)
+    .then((results) => {
+      res.json(results);
+      console.log(results);
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    });
 });
 
 module.exports = router;
