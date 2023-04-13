@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const booksCRUDRouter = require("./BooksCRUD");
 const authUsersRouter = require("./Auth");
+const searchBook = require("./Search");
+const Book = require("./Models/BooksModel");
 const app = express();
 const cors = require("cors");
 
@@ -24,5 +26,19 @@ app.get("/", (req, res) => {
 
 app.use("/crud", booksCRUDRouter);
 app.use("/users", authUsersRouter);
+app.use("/search", searchBook);
+
+app.get('/api/books', async (req, res) => {
+  const searchTerm = req.query.search;
+  console.log(searchTerm);
+  const regex = new RegExp(searchTerm, 'i');
+  const books = await Book.find({
+    $or: [
+      { BookName: { $regex: regex } },
+      { Author: { $regex: regex } },
+    ]
+  });
+  res.json(books);
+});
 
 app.listen(8000, () => console.log("Listening to port 8000"));

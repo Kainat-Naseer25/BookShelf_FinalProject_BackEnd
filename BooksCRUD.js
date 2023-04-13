@@ -123,10 +123,20 @@ router.put("/books/bookshelf/remove/:userId", async (req, res) => {
   }
 });
 
-router.get("/books/public/read", async (req, res) => {
+router.get("/books/public/read/:menu", async (req, res) => {
+  const menu = req.params.menu;
   try {
-    const books = await Book.find({ visibility: 'public' });
-    res.json(books);
+    if(menu === "All"){
+      const books = await Book.find({ visibility: 'public' });
+      res.json(books);
+      console.log(books);
+    }
+    else{
+      const books = await Book.find({ visibility: 'public', Category: menu });
+      res.json(books);
+      console.log(books);
+    }
+    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
